@@ -9,6 +9,15 @@ local des = items[i][1]
 local itm = items[i][2]
 local man = items[i][3]
 
+minetest.register_node("mymagic:"..itm.."_in_stone",{
+	description = "Orb in Stone",
+	tiles = {"default_stone.png^mymagic_"..itm.."_in_stone.png"},
+	paramtype = "light",
+	drop = "mymagic:"..itm,
+	light_source = 5,
+	groups = {cracky = 2, not_in_creative_inventory = 1},
+})
+
 minetest.register_craftitem("mymagic:"..itm,{
 	description = des,
 	inventory_image = "mymagic_"..itm..".png",
@@ -25,6 +34,15 @@ local des = items[i][1]
 local itm = items[i][2]
 local man = items[i][3]
 
+minetest.register_node("mymagic:"..itm.."_in_stone",{
+	description = "Orb in Stone",
+	tiles = {"default_stone.png^mymagic_"..itm.."_in_stone.png"},
+	paramtype = "light",
+	drop = "mymagic:"..itm,
+	light_source = 5,
+	groups = {cracky = 2, not_in_creative_inventory = 1},
+})
+
 minetest.register_craftitem("mymagic:"..itm,{
 	description = des,
 	inventory_image = "mymagic_"..itm..".png",
@@ -34,21 +52,6 @@ minetest.register_craftitem("mymagic:powder_"..itm,{
 	inventory_image = "mymagic_"..itm.."_powder.png",
 	})
 end
-minetest.override_item("default:stone",{
-	drop = {
-		max_items = 2,
-		items = {
-		{items = {"default:cobble"},rarity = 1},
-		{items = {"mymagic:orb_orange"},rarity = 150},
-		{items = {"mymagic:orb_green"},rarity = 300},
-		{items = {"mymagic:orb_blue"},rarity = 450},
-		{items = {"mymagic:orb_red"},rarity = 600},
-		{items = {"mymagic:crystal_orange"},rarity = 150},
-		{items = {"mymagic:crystal_green"},rarity = 300},
-		{items = {"mymagic:crystal_blue"},rarity = 450},
-		{items = {"mymagic:crystal_red"},rarity = 600},
-		}},
-})
 
 
 
