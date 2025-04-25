@@ -273,3 +273,83 @@ minetest.register_node("mymagic:chest_formspec", {
 
 	end,
 })
+----------------------------------------------------------------------------------------------
+
+minetest.register_node("mymagic:chest_wands_closed", {
+	description = "Wands Chest Closed",
+	tiles = {
+		"mymagic_chest_top.png",
+		"mymagic_chest_top.png",
+		"mymagic_chest_side.png^[transformFX",
+		"mymagic_chest_side.png",
+		"mymagic_chest_back.png",
+		"mymagic_chest_front.png"
+	},
+	drawtype = "nodebox",
+	paramtype = "light",
+	paramtype2 = "facedir",
+	groups = {choppy = 2,not_in_creative_inventory=1},
+	sounds = default.node_sound_wood_defaults(),
+	node_box = closed_box,
+	selection_box = {
+		type = "fixed",
+		fixed = {
+			{-0.5, -0.5, -0.3125, 0.5, 0.3125, 0.375},
+			}
+		},
+	on_place = check_air,
+
+
+	on_dig = dig_it,
+
+	on_rightclick = function(pos, node, player, itemstack, pointed_thing)
+		local rand = math.random(4)
+		local timer = core.get_node_timer(pos)
+		timer:start(5) --3600 is 1 hour
+		
+		core.swap_node(pos, {name = "mymagic:chest_wands_open", param2=node.param2})
+		
+		if rand == 1 then
+			core.spawn_item(pos, "mymagic:ice_wand")
+		elseif rand == 2 then
+			core.spawn_item(pos, "mymagic:glassweaver")
+		elseif rand == 3 then
+			core.spawn_item(pos, "mymagic:meadow_maker")
+		elseif rand == 4 then
+			core.spawn_item(pos, "mymagic:fire_wand")
+		end
+	end,
+	
+})
+
+minetest.register_node("mymagic:chest_wands_open", {
+	description = "Wands Chest Open",
+	tiles = {
+		"mymagic_chest_top.png",
+		"mymagic_chest_top.png",
+		"mymagic_chest_side.png^[transformFX",
+		"mymagic_chest_side.png",
+		"mymagic_chest_back.png",
+		"mymagic_chest_front.png"
+	},
+	drawtype = "nodebox",
+	paramtype = "light",
+	paramtype2 = "facedir",
+	groups = {choppy = 2,not_in_creative_inventory=1},
+	sounds = default.node_sound_wood_defaults(),
+	node_box = open_box,
+	selection_box = {
+		type = "fixed",
+		fixed = {
+			{-0.5, -0.5, -0.3125, 0.5, 0.3125, 0.375},
+			}
+		},
+	on_timer = function(pos, elapsed)
+
+	local timer = core.get_node_timer(pos)
+	local node = core.get_node(pos)
+
+		core.swap_node(pos, {name = "mymagic:chest_wands_closed", param2=node.param2})
+
+	end,
+})

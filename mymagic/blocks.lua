@@ -102,7 +102,7 @@ minetest.register_node("mymagic:colored_energy_"..col,{
 	drawtype = "glasslike",
 	post_effect_color = rgb,
 	drop = "",
---	light_source = 14,
+	light_source = 14,
 	walkable = false,
 	groups = {cracky=1,magic_shovel = scol},
 
