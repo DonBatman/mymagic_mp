@@ -308,3 +308,74 @@ minetest.register_globalstep(function(dtime)
         end
     end
 end)
+
+
+
+minetest.register_tool("mymagic_wands:earth_digger", {
+    description = "Terra Digger - 3×3 Tunnel (Length 5)",
+    inventory_image = "mymagic_wand_orange.png",
+    wield_image = "mymagic_wand_orange.png",
+    tool_capabilities = {
+        full_punch_interval = 1.0,
+        max_drop_level = 1,
+        groupcaps = {
+            crumbly = {
+                times = { [1] = 2.0, [2] = 1.0, [3] = 0.5 },
+                uses = 20,
+                maxlevel = 1,
+            },
+        },
+        damage_groups = { fleshy = 2 },
+    },
+    on_use = function(itemstack, user, pointed_thing)
+        -- Only activate when a node is being pointed at.
+        if pointed_thing.type ~= "node" then
+            return itemstack
+        end
+
+        -- Starting point: the node that was directly hit.
+        local start_pos = pointed_thing.under
+
+        -- Get the player's look direction and ignore vertical components.
+        local look_dir = user:get_look_dir()
+        look_dir.y = 0
+        if vector.length(look_dir) == 0 then
+            look_dir = { x = 0, y = 0, z = 1 }
+        else
+            look_dir = vector.normalize(look_dir)
+        end
+
+        -- Use the global up vector.
+        local up = { x = 0, y = 1, z = 0 }
+        -- Compute a right vector (90° rotation in the horizontal plane).
+        local right = { x = look_dir.z, y = 0, z = -look_dir.x }
+
+        local tunnel_length = 5  -- Tunnel extends 5 blocks into where the player is looking.
+
+        for i = 0, tunnel_length - 1 do
+            -- Center for the current segment of the tunnel.
+            local center = {
+                x = start_pos.x + look_dir.x * i,
+                y = start_pos.y,
+                z = start_pos.z + look_dir.z * i,
+            }
+            -- Remove nodes in a 3x3 cross-section about the current center.
+            for r = -1, 1 do         -- Offset along the right vector.
+                for u = -1, 1 do     -- Offset along the up vector.
+                    local pos = {
+                        x = center.x + right.x * r + up.x * u,
+                        y = center.y + right.y * r + up.y * u,
+                        z = center.z + right.z * r + up.z * u,
+                    }
+                    -- Round coordinates to ensure we hit the correct node.
+                    pos.x = math.floor(pos.x + 0.5)
+                    pos.y = math.floor(pos.y + 0.5)
+                    pos.z = math.floor(pos.z + 0.5)
+                    minetest.set_node(pos, { name = "air" })
+                end
+            end
+        end
+
+        return itemstack
+    end,
+})
