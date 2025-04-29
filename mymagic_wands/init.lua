@@ -328,12 +328,12 @@ minetest.register_tool("mymagic_wands:earth_digger", {
         damage_groups = { fleshy = 2 },
     },
     on_use = function(itemstack, user, pointed_thing)
+
         if pointed_thing.type ~= "node" then
             return itemstack
         end
-
+            
         local start_pos = pointed_thing.under
-
 
         local look_dir = user:get_look_dir()
         look_dir.y = 0
@@ -342,19 +342,22 @@ minetest.register_tool("mymagic_wands:earth_digger", {
         else
             look_dir = vector.normalize(look_dir)
         end
+
+      
         local up = { x = 0, y = 1, z = 0 }
         local right = { x = look_dir.z, y = 0, z = -look_dir.x }
 
         local tunnel_length = 5  
 
         for i = 0, tunnel_length - 1 do
+
             local center = {
                 x = start_pos.x + look_dir.x * i,
                 y = start_pos.y,
                 z = start_pos.z + look_dir.z * i,
             }
 
-            for r = -1, 1 do         
+            for r = -1, 1 do    
                 for u = -1, 1 do    
                     local pos = {
                         x = center.x + right.x * r + up.x * u,
@@ -364,11 +367,14 @@ minetest.register_tool("mymagic_wands:earth_digger", {
                     pos.x = math.floor(pos.x + 0.5)
                     pos.y = math.floor(pos.y + 0.5)
                     pos.z = math.floor(pos.z + 0.5)
-                    if not minetest.is_protected(pos, user:get_player_name()) then
+
+                    if not core.is_protected(pos, user:get_player_name()) then
                         local node_name = minetest.get_node(pos).name
                         if minetest.registered_nodes[node_name]
                            and minetest.registered_nodes[node_name].groups.unbreakable ~= 1 then
                             minetest.set_node(pos, { name = "air" })
+                        else
+                            core.record_protection_violation(pos, user:get_player_name())
                         end
                     end
                 end
