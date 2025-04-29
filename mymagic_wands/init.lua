@@ -309,12 +309,11 @@ minetest.register_globalstep(function(dtime)
     end
 end)
 
-
-
-minetest.register_tool("mymagic_wands:earth_digger", {
-    description = "Terra Digger - 3×3 Tunnel (Length 5)",
-    inventory_image = "mymagic_wand_orange.png",
-    wield_image = "mymagic_wand_orange.png",
+-- Air Wand: Gust and Updraft Abilities
+minetest.register_tool("mymagic_wands:air_wand", {
+    description = "Zephyr's Gale - Air Wand",
+    inventory_image = "mymagic_wand_green.png",
+    wield_image = "mymagic_wand_green.png",
     tool_capabilities = {
         full_punch_interval = 1.0,
         max_drop_level = 1,
@@ -327,60 +326,98 @@ minetest.register_tool("mymagic_wands:earth_digger", {
         },
         damage_groups = { fleshy = 2 },
     },
-    on_use = function(itemstack, user, pointed_thing)
 
-        if pointed_thing.type ~= "node" then
+    -- PRIMARY USE: Gust - Pushes target away and deals minor damage
+    on_use = function(itemstack, user, pointed_thing)
+        local caster = user:get_player_name()
+        local origin = vector.add(user:get_pos(), {x = 0, y = 1.5, z = 0})
+        local dir = user:get_look_dir()
+        local max_distance = 20
+        local ray = minetest.raycast(origin, vector.add(origin, vector.multiply(dir, max_distance)), true, false)
+        local target = nil
+
+        for pointed in ray do
+            if pointed.type == "object" and pointed.ref and pointed.ref:is_player() and pointed.ref:get_player_name() ~= caster then
+                target = pointed.ref
+                break
+            end
+        end
+
+        if not target then
+            minetest.chat_send_player(caster, "No valid target for Gust!")
             return itemstack
         end
-            
-        local start_pos = pointed_thing.under
 
-        local look_dir = user:get_look_dir()
-        look_dir.y = 0
-        if vector.length(look_dir) == 0 then
-            look_dir = { x = 0, y = 0, z = 1 }
-        else
-            look_dir = vector.normalize(look_dir)
+        -- Push the target away from the caster
+        local push_dir = vector.normalize(vector.subtract(target:get_pos(), user:get_pos()))
+        local velocity = vector.multiply(push_dir, 8)
+        velocity.y = 3  -- Add a bit of upward force
+        target:add_player_velocity(velocity)
+        target:set_hp(target:get_hp() - 0.5)
+        minetest.chat_send_player(caster, "Gust cast on " .. target:get_player_name() .. "!")
+        minetest.chat_send_player(target:get_player_name(), "You are blasted by a gust of wind!")
+        minetest.add_particlespawner({
+            amount = 40,
+            time = 0.5,
+            minpos = vector.subtract(target:get_pos(), {x=0.5, y=0, z=0.5}),
+            maxpos = vector.add(target:get_pos(), {x=0.5, y=2, z=0.5}),
+            minvel = {x=-2, y=2, z=-2},
+            maxvel = {x=2, y=4, z=2},
+            minexptime = 0.3,
+            maxexptime = 0.7,
+            minsize = 2,
+            maxsize = 4,
+            texture = "mymagic_wand_green2.png",
+        })
+        return itemstack
+    end,
+
+    -- SECONDARY USE: Updraft - Launches entities upward at target location
+    on_secondary_use = function(itemstack, user, pointed_thing)
+        local caster = user:get_player_name()
+        local origin = vector.add(user:get_pos(), {x = 0, y = 1.5, z = 0})
+        local dir = user:get_look_dir()
+        local max_distance = 20
+        local ray = minetest.raycast(origin, vector.add(origin, vector.multiply(dir, max_distance)), false, true)
+        local updraft_pos = nil
+
+        for pointed in ray do
+            if pointed.type == "node" and pointed.under then
+                updraft_pos = pointed.above
+                break
+            end
         end
 
-      
-        local up = { x = 0, y = 1, z = 0 }
-        local right = { x = look_dir.z, y = 0, z = -look_dir.x }
+        if not updraft_pos then
+            minetest.chat_send_player(caster, "No valid location for Updraft!")
+            return itemstack
+        end
 
-        local tunnel_length = 5  
-
-        for i = 0, tunnel_length - 1 do
-
-            local center = {
-                x = start_pos.x + look_dir.x * i,
-                y = start_pos.y,
-                z = start_pos.z + look_dir.z * i,
-            }
-
-            for r = -1, 1 do    
-                for u = -1, 1 do    
-                    local pos = {
-                        x = center.x + right.x * r + up.x * u,
-                        y = center.y + right.y * r + up.y * u,
-                        z = center.z + right.z * r + up.z * u,
-                    }
-                    pos.x = math.floor(pos.x + 0.5)
-                    pos.y = math.floor(pos.y + 0.5)
-                    pos.z = math.floor(pos.z + 0.5)
-
-                    if not core.is_protected(pos, user:get_player_name()) then
-                        local node_name = minetest.get_node(pos).name
-                        if minetest.registered_nodes[node_name]
-                           and minetest.registered_nodes[node_name].groups.unbreakable ~= 1 then
-                            minetest.set_node(pos, { name = "air" })
-                        else
-                            core.record_protection_violation(pos, user:get_player_name())
-                        end
-                    end
+        -- Launch all players/mobs in a 2-block radius upward
+        local objs = minetest.get_objects_inside_radius(updraft_pos, 2)
+        for _, obj in ipairs(objs) do
+            if obj:is_player() or obj:get_luaentity() then
+                obj:add_player_velocity({x=0, y=12, z=0})
+                if obj:is_player() then
+                    minetest.chat_send_player(obj:get_player_name(), "You are launched by an updraft!")
                 end
             end
         end
 
+        minetest.add_particlespawner({
+            amount = 60,
+            time = 1,
+            minpos = vector.subtract(updraft_pos, {x=1, y=0, z=1}),
+            maxpos = vector.add(updraft_pos, {x=1, y=3, z=1}),
+            minvel = {x=0, y=2, z=0},
+            maxvel = {x=0, y=6, z=0},
+            minexptime = 0.5,
+            maxexptime = 1.0,
+            minsize = 2,
+            maxsize = 5,
+            texture = "mymagic_wand_green2.png",
+        })
+        minetest.chat_send_player(caster, "Updraft created!")
         return itemstack
     end,
 })
