@@ -102,7 +102,7 @@ for _, d in ipairs(door_nodes) do
         drawtype = "nodebox",
         paramtype = "light",
         paramtype2 = "facedir",
-        groups = { cracky = 1, not_in_creative_inventory = nc },
+        groups = { unbreakable = 1, not_in_creative_inventory = 1 },
         node_box = nbox,
         selection_box = sbox,
     })

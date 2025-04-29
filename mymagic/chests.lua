@@ -288,7 +288,7 @@ minetest.register_node("mymagic:chest_wands_closed", {
 	drawtype = "nodebox",
 	paramtype = "light",
 	paramtype2 = "facedir",
-	groups = {choppy = 2,not_in_creative_inventory=1},
+	groups = {unbreakable=1,not_in_creative_inventory=1},
 	sounds = default.node_sound_wood_defaults(),
 	node_box = closed_box,
 	selection_box = {
@@ -335,7 +335,7 @@ minetest.register_node("mymagic:chest_wands_open", {
 	drawtype = "nodebox",
 	paramtype = "light",
 	paramtype2 = "facedir",
-	groups = {choppy = 2,not_in_creative_inventory=1},
+	groups = {unbreakable=1,not_in_creative_inventory=1},
 	sounds = default.node_sound_wood_defaults(),
 	node_box = open_box,
 	selection_box = {

@@ -7,8 +7,12 @@ dofile(minetest.get_modpath("mymagic").."/blocks_default.lua")
 dofile(minetest.get_modpath("mymagic").."/chests.lua")
 dofile(minetest.get_modpath("mymagic").."/mapgen.lua")
 dofile(minetest.get_modpath("mymagic").."/crafts.lua")
+dofile(minetest.get_modpath("mymagic").."/magic_wands.lua")
 dofile(minetest.get_modpath("mymagic").."/tower.lua")
 dofile(minetest.get_modpath("mymagic").."/admin.lua")
+--<<<<<<< HEAD
+--=======
 dofile(minetest.get_modpath("mymagic").."/craftitems.lua")
+-->>>>>>> 3f0e765 (Update)
 
 
