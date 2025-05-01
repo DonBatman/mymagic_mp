@@ -166,9 +166,8 @@ local function grow_flowers_around(player)
     local node_below = minetest.get_node({x = pos.x, y = pos.y - 1, z = pos.z}).name
 
     -- Only attempt flower growth if the ground is valid.
-    if node_below == "default:dirt" or node_below == "default:dirt_with_grass" then
-        -- Place a flower in a randomly selected nearby location.
-        -- Reduced the number of positions attempted from 5 to 2.
+    if node_below == "default:dirt_with_grass" then
+        -- Place a flower in a randomly selected nearby location (2 attempts per cycle).
         for i = 1, 2 do
             local offset_x = math.random(-2, 2)
             local offset_z = math.random(-2, 2)
@@ -177,14 +176,17 @@ local function grow_flowers_around(player)
                 y = pos.y,  -- Position where the flower node will be placed.
                 z = pos.z + offset_z
             }
-            -- Now check that the node below this position is a valid ground node.
-            local ground_pos = {x = flower_pos.x, y = flower_pos.y - 1, z = flower_pos.z}
-            local ground_node = minetest.get_node(ground_pos).name
-            if (ground_node == "default:dirt" or ground_node == "default:dirt_with_grass")
-                and minetest.get_node(flower_pos).name == "air"
-                and #flower_list > 0 then
-                local flower = flower_list[math.random(1, #flower_list)]
-                minetest.set_node(flower_pos, {name = flower})
+            -- Check that the flower position is not protected.
+            if not minetest.is_protected(flower_pos, player:get_player_name()) then
+                -- Now check that the node below this position is a valid ground node.
+                local ground_pos = {x = flower_pos.x, y = flower_pos.y - 1, z = flower_pos.z}
+                local ground_node = minetest.get_node(ground_pos).name
+                if (ground_node == "default:dirt" or ground_node == "default:dirt_with_grass")
+                   and minetest.get_node(flower_pos).name == "air"
+                   and #flower_list > 0 then
+                    local flower = flower_list[math.random(1, #flower_list)]
+                    minetest.set_node(flower_pos, {name = flower})
+                end
             end
         end
     end
