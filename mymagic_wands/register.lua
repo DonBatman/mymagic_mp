@@ -15,7 +15,20 @@ mymagic_wands.register = function(wand)
             },
             damage_groups = { fleshy = 5 },
         },
-        on_use = wand.on_use,
-        on_secondary_use = wand.on_secondary_use
-    })
+        on_use = function(itemstack, user, pointed_thing)
+            if core.is_player(user) then
+                local ctrl = user:get_player_control()
+                if not ctrl.sneak then
+                    wand.on_use(itemstack, user, pointed_thing)
+                else
+                    wand.on_use_sneak(itemstack, user, pointed_thing)
+                end
+            end
+        end,
+        on_secondary_use = function(itemstack, user, pointed_thing)
+            if core.is_player(user) then
+                wand.on_secondary_use(itemstack, user, pointed_thing)
+            end
+        end,
+    }) 
 end
