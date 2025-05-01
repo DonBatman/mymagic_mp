@@ -1,7 +1,8 @@
 local powers = {}
 
--- Cooldown table
+-- Cooldown table for the tunnel ability
 local wand_cooldowns = {}
+
 powers.whirlwind = function(itemstack, user, pointed_thing)
     local caster_name = user:get_player_name()
 
@@ -68,7 +69,7 @@ end
 powers.dig_tunnel = function(itemstack, user, pointed_thing)
     local player_name = user:get_player_name()
     local now = minetest.get_us_time()
-    local cooldown_time = 2 * 1e6 -- 1 second in microseconds
+    local cooldown_time = 2 * 1e6 -- 2 seconds in microseconds
 
     -- Check cooldown
     if wand_cooldowns[player_name] and now - wand_cooldowns[player_name] < cooldown_time then
@@ -123,7 +124,7 @@ powers.dig_tunnel = function(itemstack, user, pointed_thing)
         if not core.is_protected(pos, player_name) then
             local node_name = minetest.get_node(pos).name
             if minetest.registered_nodes[node_name]
-                and minetest.registered_nodes[node_name].groups.unbreakable ~= 1 then
+               and minetest.registered_nodes[node_name].groups.unbreakable ~= 1 then
                 minetest.set_node(pos, { name = "air" })
             else
                 core.record_protection_violation(pos, player_name)
@@ -138,6 +139,58 @@ powers.dig_tunnel = function(itemstack, user, pointed_thing)
     return itemstack
 end
 
+-- Gather all flower node names registered as "flowers:*"
+local function get_flower_list()
+    local flower_list = {}
+    for name, _ in pairs(minetest.registered_nodes) do
+        if name:match("^flowers:") then
+            table.insert(flower_list, name)
+        end
+    end
+    return flower_list
+end
+
+local flower_list = get_flower_list()
+
+-- Function to grow flowers around the player if wielding the wand.
+local function grow_flowers_around(player)
+    -- Check if the player is wielding the magic wand.
+    local wield_item = player:get_wielded_item()
+    if wield_item:get_name() ~= "mymagic_wands:earth_wand" then
+        return
+    end
+
+    -- Round the player's position to the nearest node.
+    local pos = vector.round(player:get_pos())
+    -- Verify the node directly below the player.
+    local node_below = minetest.get_node({x = pos.x, y = pos.y - 1, z = pos.z}).name
+
+    -- Only attempt flower growth if the ground is valid.
+    if node_below == "default:dirt" or node_below == "default:dirt_with_grass" then
+        -- Place a flower in a randomly selected nearby location.
+        -- Reduced the number of positions attempted from 5 to 2.
+        for i = 1, 2 do
+            local offset_x = math.random(-2, 2)
+            local offset_z = math.random(-2, 2)
+            local flower_pos = {
+                x = pos.x + offset_x,
+                y = pos.y,  -- Position where the flower node will be placed.
+                z = pos.z + offset_z
+            }
+            -- Now check that the node below this position is a valid ground node.
+            local ground_pos = {x = flower_pos.x, y = flower_pos.y - 1, z = flower_pos.z}
+            local ground_node = minetest.get_node(ground_pos).name
+            if (ground_node == "default:dirt" or ground_node == "default:dirt_with_grass")
+                and minetest.get_node(flower_pos).name == "air"
+                and #flower_list > 0 then
+                local flower = flower_list[math.random(1, #flower_list)]
+                minetest.set_node(flower_pos, {name = flower})
+            end
+        end
+    end
+end
+
+-- Create the wand item.
 local wand = {
     name = "earth_wand",
     description = "Terra Shaper",
@@ -147,3 +200,17 @@ local wand = {
 }
 
 mymagic_wands.register(wand)
+
+-- Flower spawn timer table to reduce placement frequency per player.
+local flower_timer = {}
+
+minetest.register_globalstep(function(dtime)
+    for _, player in ipairs(minetest.get_connected_players()) do
+        local player_name = player:get_player_name()
+        flower_timer[player_name] = (flower_timer[player_name] or 0) + dtime
+        if flower_timer[player_name] >= 2 then  -- Only trigger every 2 seconds
+            flower_timer[player_name] = 0
+            grow_flowers_around(player)
+        end
+    end
+end)
