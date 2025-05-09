@@ -23,6 +23,6 @@ minetest.register_ore({
 	clust_scarcity = 40*40*40,
 	clust_num_ores = 1,
 	clust_size     = 1,
-	height_min     = -10000,
-	height_max     = -10,
+	y_min     = -10000,
+	y_max     = -10,
 })
