@@ -1,10 +1,5 @@
---[[
-    This function helps with creating transformation wands easy.
-    - Left-click (on_use) transforms nodes from change_from to change_to.
-    - Right-click (on_place) uses the same raycast trajectory but reverts the node from change_to back to change_from.
-]]
 local function register_transform_wand(wand_info)
-    minetest.register_tool("mymagic:" .. wand_info.name, {
+    core.register_tool("mymagic:" .. wand_info.name, {
         description = wand_info.description,
         inventory_image = wand_info.texture,
         wield_image = wand_info.texture,
@@ -17,15 +12,13 @@ local function register_transform_wand(wand_info)
             damage_groups = { fleshy = 5 },
         },
 
-        -- Left-click: Transform nodes (from change_from to change_to)
         on_use = function(itemstack, user, pointed_thing)
             local start_pos = vector.add(user:get_pos(), { x = 0, y = 1.5, z = 0 })
             local direction = user:get_look_dir()
             local ray_length = 50 
             local end_pos = vector.add(start_pos, vector.multiply(direction, ray_length))
-            local ray = minetest.raycast(start_pos, end_pos, false, false)
+            local ray = core.raycast(start_pos, end_pos, false, false)
 
-            -- Visual feedback with a particle effect
             core.add_particle({
                 pos = start_pos,
                 velocity = vector.multiply(direction, 10),
@@ -41,17 +34,16 @@ local function register_transform_wand(wand_info)
                     local distance = vector.distance(start_pos, hit_pos)
                     local delay = distance / 30
                     core.after(delay, function()
-                        local node = minetest.get_node(hit_pos)
+                        local node = core.get_node(hit_pos)
                         if node.name == wand_info.change_from then
-                            minetest.set_node(hit_pos, { name = wand_info.change_to })
-                            -- Optionally, transform surrounding nodes as well
+                            core.set_node(hit_pos, { name = wand_info.change_to })
                             for dx = -1, 1 do
                                 for dy = -1, 1 do
                                     for dz = -1, 1 do
                                         local surrounding_pos = vector.add(hit_pos, { x = dx, y = dy, z = dz })
-                                        local surrounding_node = minetest.get_node(surrounding_pos)
+                                        local surrounding_node = core.get_node(surrounding_pos)
                                         if surrounding_node.name == wand_info.change_from then
-                                            minetest.set_node(surrounding_pos, { name = wand_info.change_to })
+                                            core.set_node(surrounding_pos, { name = wand_info.change_to })
                                         end
                                     end
                                 end
@@ -64,15 +56,13 @@ local function register_transform_wand(wand_info)
             return itemstack
         end,
 
-        -- Right-click: Revert transformation (from change_to back to change_from) using the same raycast trajectory
         on_place = function(itemstack, user, pointed_thing)
             local start_pos = vector.add(user:get_pos(), { x = 0, y = 1.5, z = 0 })
             local direction = user:get_look_dir()
             local ray_length = 50 
             local end_pos = vector.add(start_pos, vector.multiply(direction, ray_length))
-            local ray = minetest.raycast(start_pos, end_pos, false, false)
+            local ray = core.raycast(start_pos, end_pos, false, false)
 
-            -- Re-use the same particle effect for consistency
             core.add_particle({
                 pos = start_pos,
                 velocity = vector.multiply(direction, 10),
@@ -88,17 +78,16 @@ local function register_transform_wand(wand_info)
                     local distance = vector.distance(start_pos, hit_pos)
                     local delay = distance / 30
                     core.after(delay, function()
-                        local node = minetest.get_node(hit_pos)
+                        local node = core.get_node(hit_pos)
                         if node.name == wand_info.change_to then
-                            minetest.set_node(hit_pos, { name = wand_info.change_from })
-                            -- Optionally, revert surrounding nodes as well
+                            core.set_node(hit_pos, { name = wand_info.change_from })
                             for dx = -1, 1 do
                                 for dy = -1, 1 do
                                     for dz = -1, 1 do
                                         local surrounding_pos = vector.add(hit_pos, { x = dx, y = dy, z = dz })
-                                        local surrounding_node = minetest.get_node(surrounding_pos)
+                                        local surrounding_node = core.get_node(surrounding_pos)
                                         if surrounding_node.name == wand_info.change_to then
-                                            minetest.set_node(surrounding_pos, { name = wand_info.change_from })
+                                            core.set_node(surrounding_pos, { name = wand_info.change_from })
                                         end
                                     end
                                 end
@@ -112,20 +101,14 @@ local function register_transform_wand(wand_info)
         end,
     })
 
-    -- Register the recipe if one is provided
     if wand_info.recipe then
-        minetest.register_craft({
+        core.register_craft({
             output = "mymagic:" .. wand_info.name,
             recipe = wand_info.recipe,
         })
     end
 end
 
-
---[[
-    Fire Wand
-        - Transforms default:stone to default:lava_source
-]]
 local fire_wand = {
     name = "fire_wand",
     description = "Inferno's Embrace - Lava / Stone",
@@ -141,13 +124,8 @@ local fire_wand = {
         {"", "default:stick", ""},
     },
 }
-
 register_transform_wand(fire_wand)
 
---[[
-    Ice Wand
-        - Transforms default:water_source to default:ice
-]]
 local ice_wand = {
     name = "ice_wand",
     description = "Winter's Whisper - Water / Ice",
@@ -163,13 +141,8 @@ local ice_wand = {
         {"", "default:stick", ""},
     },
 }
-
 register_transform_wand(ice_wand)
 
---[[
-    The Glassweaver
-        - Transforms default:sand to default:glass
-]]
 local glass_wand = {
     name = "glassweaver",
     description = "The Glassweaver - Sand / Glass",
@@ -185,13 +158,8 @@ local glass_wand = {
         {"", "default:stick", ""},
     },
 }
-
 register_transform_wand(glass_wand)
 
---[[
-    The Meadow Maker
-        - Transforms default:dirt to default:dirt_with_grass
-]]
 local dirt_wand = {
     name = "meadow_maker",
     description = "The Meadow Maker - Dirt / Dirt With Grass",
@@ -207,5 +175,4 @@ local dirt_wand = {
         {"", "default:stick", ""},
     },
 }
-
 register_transform_wand(dirt_wand)

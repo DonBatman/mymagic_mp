@@ -1,12 +1,11 @@
--- Define color progression and precompute the enchantment mapping table.
 local colors = {"orange", "green", "blue", "red"}
 local enchantment_map = {}
+
 local function addMapping(base, reqColor, result)
     enchantment_map[base] = enchantment_map[base] or {}
     enchantment_map[base][reqColor] = result
 end
 
--- Generate mappings for standard tools (pick, axe, shovel, sword).
 for _, tool in ipairs({"pick", "axe", "shovel", "sword"}) do
     for _, mat in ipairs({"wood", "stone", "steel", "bronze", "mese", "diamond"}) do
         local base = "default:" .. tool .. "_" .. mat
@@ -18,7 +17,6 @@ for _, tool in ipairs({"pick", "axe", "shovel", "sword"}) do
     end
 end
 
--- Generate mappings for knives.
 for _, mat in ipairs({"wood", "stone", "steel", "bronze", "mese", "diamond"}) do
     local base = "mymagic_tools:knife_" .. mat
     addMapping(base, colors[1], "mymagic_tools:knife_enchanted_" .. mat .. "_" .. colors[1])
@@ -28,7 +26,6 @@ for _, mat in ipairs({"wood", "stone", "steel", "bronze", "mese", "diamond"}) do
     end
 end
 
--- Generate mappings for diamond armor (helmet, chestplate, leggings, boots).
 for _, armor in ipairs({"helmet", "chestplate", "leggings", "boots"}) do
     local base = "3d_armor:" .. armor .. "_diamond"
     addMapping(base, colors[1], "mymagic_tools:diamond_" .. armor .. "_" .. colors[1])
@@ -38,7 +35,17 @@ for _, armor in ipairs({"helmet", "chestplate", "leggings", "boots"}) do
     end
 end
 
--- Define the Enchantment Table node.
+local wands = {
+    {base = "mymagic_wands:fire_wand", color = "red"},
+    {base = "mymagic_wands:ice_wand", color = "blue"},
+    {base = "mymagic_wands:glassweaver", color = "orange"},
+    {base = "mymagic_wands:meadow_maker", color = "green"},
+}
+
+for _, w in ipairs(wands) do
+    addMapping(w.base, w.color, w.base .. "_enchanted")
+end
+
 local enchantmentTableDef = {
     description = "Enchantment Table",
     tiles = {
@@ -114,22 +121,32 @@ local enchantmentTableDef = {
                 local orb2 = inv:get_stack("orb2", 1)
                 local orb3 = inv:get_stack("orb3", 1)
                 local orb4 = inv:get_stack("orb4", 1)
+                
                 local orbColor = orb1:get_name():match("mymagic:orb_(%a+)")
                 if orbColor and orb2:get_name() == "mymagic:orb_" .. orbColor
                    and orb3:get_name() == "mymagic:orb_" .. orbColor
                    and orb4:get_name() == "mymagic:orb_" .. orbColor then
+                    
                     local mapping = enchantment_map[tool:get_name()]
                     if mapping and mapping[orbColor] then
                         local wear = tool:get_wear()
+                        local old_meta = tool:get_meta():to_table()
+                        
                         inv:add_item("output", mapping[orbColor])
                         local output = inv:get_stack("output", 1)
                         output:set_wear(wear)
+                        
+                        output:get_meta():from_table(old_meta)
+                        
                         inv:set_stack("output", 1, output)
+                        
                         orb1:take_item(1); inv:set_stack("orb1", 1, orb1)
                         orb2:take_item(1); inv:set_stack("orb2", 1, orb2)
                         orb3:take_item(1); inv:set_stack("orb3", 1, orb3)
                         orb4:take_item(1); inv:set_stack("orb4", 1, orb4)
                         tool:take_item(1); inv:set_stack("tool", 1, tool)
+                        
+                        core.sound_play("default_cool_lava", {pos = pos, gain = 1.0})
                     end
                 end
             end
@@ -138,6 +155,7 @@ local enchantmentTableDef = {
 }
 
 core.register_node("mymagic:enchantment_table", enchantmentTableDef)
+
 core.register_craft({
     output = "mymagic:enchantment_table",
     recipe = {

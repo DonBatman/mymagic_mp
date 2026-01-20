@@ -1,4 +1,4 @@
--- Ghost by BlockMen
+-- Ghost by BlockMen (Modified for My Magic)
 
 dofile(minetest.get_modpath("mymagic_mobs").."/api.lua")
 
@@ -24,9 +24,10 @@ mymagic_mobs:register_mob("mymagic_mobs:ghost", {
 		damage = "mymagic_ghost_hit",
 		death = "mymagic_ghost_death"
 	},
---	drops = {
---		{name = "mymagic_mobs:orb_green", chance = 80, min = 1, max = 1},
---	},
+	drops = {
+		{name = "mymagic:void_orb", chance = 1, min = 1, max = 2},
+		{name = "mymagic:mana_crystal", chance = 2, min = 1, max = 3},
+	},
 	walk_velocity = 2,
 	run_velocity = 2,
 	fall_speed = 0,
@@ -45,7 +46,7 @@ mymagic_mobs:register_mob("mymagic_mobs:ghost", {
 })
 --mobs:register_spawn(name, nodes, max_light, min_light, chance,active_object_count, max_height, day_toggle)
 
-mymagic_mobs:register_spawn("mymagic_mobs:ghost", "mymagic:candle", 14, 0, 1, 4,200)
+mymagic_mobs:register_spawn("mymagic_mobs:ghost", "mymagic:candle", 14, 0, 1, 8,500)
 
 --mymagic_mobs:register_egg("mymagic_mobs:ghost", "Ghost", "default_cloud.png", 1)
 
