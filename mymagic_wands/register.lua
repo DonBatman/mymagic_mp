@@ -1,26 +1,22 @@
--- register.lua
--- This file provides the shared registration function for all wands.
--- It handles Leveling (XP), Sneak-toggling, and Mana integration.
-
 local function gain_wand_xp(itemstack, user)
     local meta = itemstack:get_meta()
     local xp = meta:get_int("wand_xp") + 1
     local level = meta:get_int("wand_level")
     if level < 1 then level = 1 end
 
-    local next_level_xp = level * 20 -- Levels up every 20 uses
+    local next_level_xp = level * 20
 
     if xp >= next_level_xp then
         level = level + 1
         xp = 0
-        core.chat_send_player(user:get_player_name(), "§a✨ Your Wand reached Level " .. level .. "!")
+        core.chat_send_player(user:get_player_name(), "Your Wand reached Level " .. level .. "!")
     end
 
     meta:set_int("wand_xp", xp)
     meta:set_int("wand_level", level)
     
     local base_desc = meta:get_string("base_desc")
-    meta:set_string("description", "§e" .. base_desc .. "\n§bLevel: " .. level .. " [" .. xp .. "/" .. next_level_xp .. "]")
+    meta:set_string("description", base_desc .. "\nLevel: " .. level .. " [" .. xp .. "/" .. next_level_xp .. "]")
     
     return itemstack
 end

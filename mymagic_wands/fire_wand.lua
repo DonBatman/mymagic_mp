@@ -1,4 +1,3 @@
--- fire_wand.lua
 local powers = {}
 local wand_cooldowns = {}
 
@@ -9,7 +8,6 @@ local function check_cooldown(name, seconds)
     return true
 end
 
--- Fireball Power
 powers.fireball = function(itemstack, user, pointed_thing)
     local pname = user:get_player_name()
     local level = math.max(1, itemstack:get_meta():get_int("wand_level"))
@@ -29,7 +27,6 @@ powers.fireball = function(itemstack, user, pointed_thing)
     return itemstack
 end
 
--- Toggle Lava Power
 powers.toggle_stone_lava = function(itemstack, user, pointed_thing)
     if not mymagic_wands.use_mana(user, 30) then return itemstack end
     local eye = vector.add(user:get_pos(), {x=0, y=1.5, z=0})
@@ -47,24 +44,19 @@ powers.toggle_stone_lava = function(itemstack, user, pointed_thing)
     return itemstack
 end
 
--- Ring of Fire Power
 powers.ring_of_fire = function(itemstack, user, pointed_thing)
-    -- Logic: If pointing at a player/mob, center fire on them. 
-    -- Otherwise, center fire on the user.
     local target = (pointed_thing.type == "object") and pointed_thing.ref or user
     
     if not mymagic_wands.use_mana(user, 40) then return itemstack end
 
     local pos = vector.round(target:get_pos())
     local level = math.max(1, itemstack:get_meta():get_int("wand_level"))
-    local size = math.min(4, 1 + math.floor(level/5)) -- Radius grows with level
+    local size = math.min(4, 1 + math.floor(level/5))
 
     for dx = -size, size do
         for dz = -size, size do
-            -- Only create the border of the square
             if math.abs(dx) == size or math.abs(dz) == size then
                 local fpos = {x=pos.x+dx, y=pos.y, z=pos.z+dz}
-                -- Check if node is air and not protected
                 if core.get_node(fpos).name == "air" and not core.is_protected(fpos, user:get_player_name()) then
                     core.set_node(fpos, {name="fire:basic_flame"})
                 end
@@ -72,13 +64,11 @@ powers.ring_of_fire = function(itemstack, user, pointed_thing)
         end
     end
     
-    -- Visual Feedback
     core.chat_send_player(user:get_player_name(), "§6Ignis Circularis!")
     
     return itemstack
 end
 
--- Fireball Entity
 core.register_entity("mymagic_wands:fireball_entity", {
     initial_properties = {
         visual = "sprite",
@@ -89,7 +79,6 @@ core.register_entity("mymagic_wands:fireball_entity", {
     on_step = function(self, dtime)
         local pos = self.object:get_pos()
         if core.get_node(pos).name ~= "air" then
-            -- Create a small flame where it hits
             if core.get_node(pos).name ~= "ignore" then
                  core.set_node(pos, {name="fire:basic_flame"})
             end
@@ -107,7 +96,6 @@ mymagic_wands.register({
     on_secondary_use = powers.ring_of_fire,
 })
 
--- Standardized Crafting Recipe
 core.register_craft({
     output = "mymagic_wands:fire_wand",
     recipe = {

@@ -1,5 +1,3 @@
--- MyMagic Potions: Complete Item Definitions with Effects
-
 local function play_drink_sound(user)
 	minetest.sound_play("default_dig_glass", {
 		pos = user:get_pos(),
@@ -8,7 +6,6 @@ local function play_drink_sound(user)
 	})
 end
 
--- Helper to give back an empty bottle
 local function give_empty_bottle(user)
 	local inv = user:get_inventory()
 	local bottle_stack = ItemStack("mymagic_potions:glass_bottle")
@@ -19,7 +16,6 @@ local function give_empty_bottle(user)
 	end
 end
 
--- 1. Potion of Health (Red)
 minetest.register_craftitem("mymagic_potions:potion_health", {
 	description = "Potion of Health\nRestores 6 HP",
 	inventory_image = "mymagic_bottle_red.png",
@@ -37,7 +33,6 @@ minetest.register_craftitem("mymagic_potions:potion_health", {
 	end,
 })
 
--- 2. Potion of Mana (Blue)
 minetest.register_craftitem("mymagic_potions:potion_mana", {
 	description = "Potion of Mana\nRestores magical energy",
 	inventory_image = "mymagic_bottle_blue.png",
@@ -55,7 +50,6 @@ minetest.register_craftitem("mymagic_potions:potion_mana", {
 	end,
 })
 
--- 3. Potion of Swiftness (Green)
 minetest.register_craftitem("mymagic_potions:potion_swiftness", {
 	description = "Potion of Swiftness\nIncreases movement speed for 30s",
 	inventory_image = "mymagic_bottle_green.png",
@@ -75,7 +69,6 @@ minetest.register_craftitem("mymagic_potions:potion_swiftness", {
 	end,
 })
 
--- 4. Potion of Fire Resistance (Orange)
 minetest.register_craftitem("mymagic_potions:potion_fire_res", {
 	description = "Potion of Fire Resistance\nProtects from heat for 60s",
 	inventory_image = "mymagic_bottle_orange.png",
@@ -96,7 +89,6 @@ minetest.register_craftitem("mymagic_potions:potion_fire_res", {
 	end,
 })
 
--- 5. Potion of Void (Purple)
 minetest.register_craftitem("mymagic_potions:potion_void", {
 	description = "Potion of Void\nBrief invisibility and low gravity",
 	inventory_image = "mymagic_bottle_purple.png",
@@ -118,7 +110,6 @@ minetest.register_craftitem("mymagic_potions:potion_void", {
 	end,
 })
 
--- 6. Potion of Night Vision (Yellow)
 minetest.register_craftitem("mymagic_potions:potion_night_vision", {
 	description = "Potion of Night Vision\nSee in the dark for 60s",
 	inventory_image = "mymagic_bottle_yellow.png",
@@ -126,13 +117,11 @@ minetest.register_craftitem("mymagic_potions:potion_night_vision", {
 	on_use = function(itemstack, user, pointed_thing)
 		if not user or not user:is_player() then return end
 		
-		-- Set eye offset or use a HUD effect if a mod like 'post_processing' is used
-		-- Standard approach is overriding the sky or light level via player properties
-		user:override_day_night_ratio(1.0) -- Force full brightness for the player
+		user:override_day_night_ratio(1.0)
 		
 		minetest.after(60, function()
 			if user and user:is_player() then
-				user:override_day_night_ratio(nil) -- Reset to normal
+				user:override_day_night_ratio(nil)
 			end
 		end)
 		

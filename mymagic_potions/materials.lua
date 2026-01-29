@@ -1,5 +1,3 @@
--- MyMagic Potions: Materials and Ores
-
 minetest.register_craftitem("mymagic_potions:mana_crystal", {
     description = "Mana Crystal",
     inventory_image = "mymagic_mana_crystal.png",
@@ -50,7 +48,6 @@ minetest.register_node("mymagic_potions:glass_bottle", {
     description = "Glass Bottle",
     drawtype = "plantlike",
     tiles = {"mymagic_bottle_empty.png"},
-    --inventory_image = "mymagic_bottle_empty.png",
     paramtype = "light",
     walkable = false,
     groups = {vessel = 1, dig_immediate = 3},

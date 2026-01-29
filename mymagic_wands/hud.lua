@@ -1,9 +1,5 @@
--- hud.lua
--- Integrated with myprogress and myxp mods, with a standalone fallback if they're missing.
-
 local player_huds = {}
 
--- Function to create a simple text-based progress bar
 local function get_progress_bar(current, max)
     local percent = math.min(current / math.max(max, 1), 1)
     local portion = math.floor(percent * 10)
@@ -14,7 +10,6 @@ local function get_progress_bar(current, max)
     return bar
 end
 
--- Function to update or create a standalone HUD for a player
 local function update_standalone_hud(player)
     local name = player:get_player_name()
     local mana = mymagic_wands.mana[name] or 0
@@ -26,7 +21,7 @@ local function update_standalone_hud(player)
     if not player_huds[name] then
         player_huds[name] = player:hud_add({
             hud_elem_type = "text",
-            position = {x = 0, y = 1}, -- Bottom Left
+            position = {x = 0, y = 1},
             alignment = {x = 1, y = -1}, 
             offset = {x = 20, y = -20}, 
             text = hud_text,
@@ -38,7 +33,6 @@ local function update_standalone_hud(player)
     end
 end
 
--- Refresh logic
 local timer = 0
 core.register_globalstep(function(dtime)
     timer = timer + dtime
@@ -49,7 +43,6 @@ core.register_globalstep(function(dtime)
             local max_mana = 100
             local integrated = false
             
-            -- Priority 1: Try to integrate with myprogress
             if myprogress and myprogress.players and myprogress.players[name] then
                 local stats = myprogress.players[name]
                 stats.mana = math.floor(mana)
@@ -79,12 +72,10 @@ core.register_globalstep(function(dtime)
                 end
                 integrated = true
             
-            -- Priority 2: Try to integrate with myxp
             elseif myxp then
                 local bar = get_progress_bar(mana, max_mana)
                 local display_text = "Mana: " .. math.floor(mana) .. " [" .. bar .. "]"
                 
-                -- Updated offset to y = -40 for mana to sit above myxp
                 if not player_huds[name] then
                     player_huds[name] = player:hud_add({
                         hud_elem_type = "text",
@@ -101,7 +92,6 @@ core.register_globalstep(function(dtime)
                 integrated = true
             end
 
-            -- Handle Cleanup if no longer integrated or switching to myprogress
             if integrated then
                 if myprogress and myprogress.players and myprogress.players[name] and player_huds[name] then
                     player:hud_remove(player_huds[name])
@@ -115,7 +105,6 @@ core.register_globalstep(function(dtime)
     end
 end)
 
--- Cleanup on leave
 core.register_on_leaveplayer(function(player)
     player_huds[player:get_player_name()] = nil
 end)

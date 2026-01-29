@@ -1,8 +1,5 @@
--- light_wand.lua
 local powers = {}
 
--- 1. MAGIC FLARE (Left Click)
--- Shoots a glowing entity that places a temporary light node on impact
 core.register_node("mymagic_wands:light_orb", {
     description = "Magic Light",
     drawtype = "airlike",
@@ -15,7 +12,7 @@ core.register_node("mymagic_wands:light_orb", {
     light_source = 14,
     groups = {not_in_creative_inventory = 1},
     on_construct = function(pos)
-        core.get_node_timer(pos):start(30) -- Light lasts 30 seconds
+        core.get_node_timer(pos):start(30)
     end,
     on_timer = function(pos)
         core.remove_node(pos)
@@ -51,7 +48,6 @@ powers.flare = function(itemstack, user, pointed_thing)
     return itemstack
 end
 
--- 2. ILLUMINATED HEAL (Shift + Left Click)
 powers.heal = function(itemstack, user, pointed_thing)
     local hp = user:get_hp()
     if hp >= 20 then return itemstack end
@@ -68,7 +64,6 @@ powers.heal = function(itemstack, user, pointed_thing)
     return itemstack
 end
 
--- 3. HOLY NOVA (Right Click)
 powers.nova = function(itemstack, user, pointed_thing)
     if not mymagic_wands.use_mana(user, 30) then return itemstack end
     local pos = user:get_pos()

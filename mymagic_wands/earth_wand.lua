@@ -1,7 +1,5 @@
--- earth_wand.lua
 local powers = {}
 
--- 1. DIG TUNNEL (Left Click)
 powers.dig_tunnel = function(itemstack, user, pointed_thing)
     if pointed_thing.type ~= "node" then return itemstack end
     local level = math.max(1, itemstack:get_meta():get_int("wand_level"))
@@ -9,17 +7,16 @@ powers.dig_tunnel = function(itemstack, user, pointed_thing)
 
     local start_pos = pointed_thing.under
     local dir = vector.normalize(user:get_look_dir())
-    local length = 5 + math.floor(level / 2) -- Length increases with level
+    local length = 5 + math.floor(level / 2)
 
     for i = 0, length do
         local p = vector.round(vector.add(start_pos, vector.multiply(dir, i)))
         core.after(i * 0.1, function()
-            for dy = 0, 1 do -- 2 blocks high
+            for dy = 0, 1 do
                 local np = {x=p.x, y=p.y+dy, z=p.z}
                 if not core.is_protected(np, user:get_player_name()) then
                     local node = core.get_node(np)
                     if node.name ~= "air" and node.name ~= "ignore" then
-                        -- Handle item drops
                         local drops = core.get_node_drops(node.name, "")
                         for _, item in ipairs(drops) do
                             core.add_item(np, item)
@@ -33,7 +30,6 @@ powers.dig_tunnel = function(itemstack, user, pointed_thing)
     return itemstack
 end
 
--- 2. TOGGLE DIRT/GRASS (Shift + Left Click)
 powers.toggle_dirt = function(itemstack, user, pointed_thing)
     if pointed_thing.type ~= "node" then return itemstack end
     if not mymagic_wands.use_mana(user, 5) then return itemstack end
@@ -46,7 +42,6 @@ powers.toggle_dirt = function(itemstack, user, pointed_thing)
     return itemstack
 end
 
--- 3. WALL OF STONE (Right Click)
 powers.stone_wall = function(itemstack, user, pointed_thing)
     if not mymagic_wands.use_mana(user, 40) then return itemstack end
     
@@ -54,16 +49,12 @@ powers.stone_wall = function(itemstack, user, pointed_thing)
     local dir = user:get_look_dir()
     local level = math.max(1, itemstack:get_meta():get_int("wand_level"))
     
-    -- ROTATION FIX:
-    -- To rotate the wall 90 degrees, we swap sin and cos and invert one.
     local yaw = user:get_look_yaw()
     local wall_dir = {x = -math.sin(yaw), y = 0, z = math.cos(yaw)}
     
-    -- Wall size scales with level
     local half_width = 1 + math.floor(level / 4)
     local height = 2 + math.floor(level / 10)
     
-    -- Project the wall 3 blocks in front of the player
     local center = vector.add(pos, vector.multiply(vector.normalize({x=dir.x, y=0, z=dir.z}), 3))
     
     for w = -half_width, half_width do
@@ -93,7 +84,6 @@ mymagic_wands.register({
     on_secondary_use = powers.stone_wall,
 })
 
--- Standardized Crafting Recipe
 core.register_craft({
     output = "mymagic_wands:earth_wand",
     recipe = {

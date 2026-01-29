@@ -2,7 +2,6 @@
 local powers = {}
 local stealth_active = {}
 
--- 1. SHADOW BOLT (Left Click)
 core.register_entity("mymagic_wands:shadow_bolt", {
     initial_properties = {
         visual = "sprite",
@@ -13,7 +12,6 @@ core.register_entity("mymagic_wands:shadow_bolt", {
         local pos = self.object:get_pos()
         for _, obj in ipairs(core.get_objects_inside_radius(pos, 1.5)) do
             if obj ~= self.owner_obj then
-                -- Logic to "blind" or damage could go here
                 obj:punch(self.owner_obj, 1.0, {full_punch_interval=1.0, damage_groups={fleshy=5}})
                 self.object:remove()
                 return

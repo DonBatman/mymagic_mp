@@ -1,4 +1,3 @@
--- MyMagic Potions: Main Initialization
 mymagic_potions = {}
 
 local path = minetest.get_modpath("mymagic_potions")
