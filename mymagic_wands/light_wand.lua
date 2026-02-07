@@ -60,7 +60,7 @@ powers.heal = function(itemstack, user, pointed_thing)
         attached = user,
         texture = "default_glass.png^[colorize:#FFFFFF:200",
     })
-    core.chat_send_player(user:get_player_name(), "§eLux Sanat!")
+    core.chat_send_player(user:get_player_name(), "Lux Sanat!")
     return itemstack
 end
 

@@ -1,4 +1,3 @@
-
 local powers = {}
 local stealth_active = {}
 

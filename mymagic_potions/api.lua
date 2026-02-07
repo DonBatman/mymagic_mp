@@ -1,6 +1,6 @@
-arcana.api = {}
+mymagic_potions.api = {}
 
-function arcana.api.consume_mana(player, amount)
+function mymagic_potions.api.consume_mana(player, amount)
     local name = player:get_player_name()
     local data = player_data[name]
     
@@ -13,7 +13,7 @@ function arcana.api.consume_mana(player, amount)
     return false
 end
 
-function arcana.api.get_safe_spawn_pos(pos, radius)
+function mymagic_potions.api.get_safe_spawn_pos(pos, radius)
     local attempts = 0
     while attempts < 10 do
         local offset = {
@@ -33,7 +33,7 @@ function arcana.api.get_safe_spawn_pos(pos, radius)
     return nil
 end
 
-function arcana.api.spawn_particles(pos, color)
+function mymagic_potions.api.spawn_particles(pos, color)
     minetest.add_particlespawner({
         amount = 20,
         time = 0.5,
@@ -47,8 +47,8 @@ function arcana.api.spawn_particles(pos, color)
         maxexptime = 2,
         minsize = 1,
         maxsize = 3,
-        texture = "arcana_particle.png^[multiply:" .. (color or "#FFFFFF"),
+        texture = "mymagic_potions_particle.png^[multiply:" .. (color or "#FFFFFF"),
     })
 end
 
-minetest.log("info", "[Tower of Arcana] API Loaded")
+minetest.log("info", "[Tower of mymagic_potions] API Loaded")

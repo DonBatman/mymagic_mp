@@ -11,4 +11,5 @@ dofile(path .. "/crafts.lua")
 dofile(path .. "/mapgen.lua")
 dofile(path .. "/tower.lua")
 dofile(path .. "/admin.lua")
+dofile(path .. "/finder.lua")
 

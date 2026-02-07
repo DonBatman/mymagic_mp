@@ -57,27 +57,3 @@ minetest.register_tool("mymagic_tools:axe_enchanted_"..mat.."_"..col,{
 })
 end
 
---[[
-function = op(itemstack, placer, pointed_thing)
-	local node = pointed_thing.above
-	if pointed_thing.type ~= "node" then
-		return
-	end
---]]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

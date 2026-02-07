@@ -71,7 +71,7 @@ powers.stone_wall = function(itemstack, user, pointed_thing)
         end
     end
     
-    core.chat_send_player(user:get_player_name(), "§6Terra Murus!")
+    core.chat_send_player(user:get_player_name(), "Terra Murus!")
     return itemstack
 end
 

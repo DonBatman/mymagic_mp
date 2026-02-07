@@ -64,7 +64,7 @@ powers.ring_of_fire = function(itemstack, user, pointed_thing)
         end
     end
     
-    core.chat_send_player(user:get_player_name(), "§6Ignis Circularis!")
+    core.chat_send_player(user:get_player_name(), "Ignis Circularis!")
     
     return itemstack
 end

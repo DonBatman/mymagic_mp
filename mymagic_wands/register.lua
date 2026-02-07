@@ -9,7 +9,7 @@ local function gain_wand_xp(itemstack, user)
     if xp >= next_level_xp then
         level = level + 1
         xp = 0
-        core.chat_send_player(user:get_player_name(), "Your Wand reached Level " .. level .. "!")
+        core.chat_send_player(user:get_player_name(), " Your Wand reached Level " .. level .. "!")
     end
 
     meta:set_int("wand_xp", xp)

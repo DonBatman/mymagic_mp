@@ -117,8 +117,6 @@ minetest.register_craftitem("mymagic_potions:potion_night_vision", {
 	on_use = function(itemstack, user, pointed_thing)
 		if not user or not user:is_player() then return end
 		
-		user:override_day_night_ratio(1.0)
-		
 		minetest.after(60, function()
 			if user and user:is_player() then
 				user:override_day_night_ratio(nil)

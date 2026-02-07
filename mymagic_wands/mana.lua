@@ -13,7 +13,7 @@ function mymagic_wands.use_mana(player, amount)
         return true
     end
     
-    core.chat_send_player(name, "§cNot enough mana!")
+    core.chat_send_player(name, "Not enough mana!")
     return false
 end
 

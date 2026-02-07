@@ -37,7 +37,7 @@ powers.leap = function(itemstack, user, pointed_thing)
     
     fall_protected[name] = true
     
-    core.chat_send_player(name, "§bAscension!")
+    core.chat_send_player(name, "Ascension!")
     return itemstack
 end
 
@@ -66,7 +66,7 @@ powers.vacuum = function(itemstack, user, pointed_thing)
         end
     end
     
-    core.chat_send_player(user:get_player_name(), "§bVortex!")
+    core.chat_send_player(user:get_player_name(), "Vortex!")
     return itemstack
 end
 
